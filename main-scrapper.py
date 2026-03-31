@@ -1,4 +1,5 @@
 from scrapers.saha_federacija import SahaFederacijaScraper
+from scrapers.sahaskola import SahaSkolaScraper
 from database.tournament_repository import TournamentRepository
 
 class MainScraper:
@@ -11,6 +12,7 @@ class MainScraper:
         """
         return [
             SahaFederacijaScraper(),
+            SahaSkolaScraper()
         ]
 
     def scrap_data(self):
