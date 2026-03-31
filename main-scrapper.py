@@ -1,4 +1,5 @@
 from scrapers.saha_federacija import SahaFederacijaScraper
+from database.tournament_repository import TournamentRepository
 
 class MainScraper:
     def __init__(self):
@@ -28,6 +29,31 @@ class MainScraper:
                 print(f"Error in {source.__class__.__name__}: {e}")
 
         return tournaments
+
+    def save_to_database(tournaments):
+        repo = TournamentRepository()
+            
+        tournaments.sort(key=lambda t: t.tournament_date)
+    
+        for t in tournaments:
+            existing = repo.find_existing(t.name, t.tournament_date)
+    
+            if existing:
+                tournament_id, existing_sources = existing
+    
+                # Merge sources
+                merged_sources = list(set(existing_sources + t.source))
+    
+                t.source = merged_sources
+                t.update_timestamp()
+    
+                repo.update(tournament_id, t)
+    
+                print(f"Updated: {t.name}")
+    
+            else:
+                repo.insert(t)
+                print(f"Inserted: {t.name}")
 
 if __name__ == "__main__":
     scraper = MainScraper()
